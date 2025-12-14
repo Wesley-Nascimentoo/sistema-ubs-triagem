@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sistema-ubs-triagem-db
+    environment:
+      POSTGRES_USER: triagem_user
+      POSTGRES_PASSWORD: triagem_password
+      POSTGRES_DB: sistema_ubs_triagem
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=pt_BR.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U triagem_user -d sistema_ubs_triagem"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sistema-ubs-network
+
+networks:
+  sistema-ubs-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
