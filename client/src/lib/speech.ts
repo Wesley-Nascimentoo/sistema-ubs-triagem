@@ -68,6 +68,42 @@ export async function announcePatient(
 }
 
 /**
+ * Fala um texto repetidamente
+ */
+export async function speakRepeatedly(
+  text: string,
+  times: number,
+  options: SpeechOptions = {}
+): Promise<void> {
+  for (let i = 0; i < times; i++) {
+    await speak(text, options);
+    // Adicionar um pequeno delay entre as repetições
+    if (i < times - 1) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+}
+
+/**
+ * Gera o texto de anúncio de chamada de paciente.
+ * Exemplo: "Chamando paciente João da Silva, para a sala de triagem 1."
+ */
+export function generateCallText(patientName: string, roomName: string): string {
+  return `Chamando paciente ${patientName}, para a sala ${roomName}.`;
+}
+
+/**
+ * Anuncia a chamada de um paciente com repetição de 4 vezes.
+ */
+export async function callPatient(patientName: string, roomName: string): Promise<void> {
+  const text = generateCallText(patientName, roomName);
+  await speakRepeatedly(text, 4, {
+    rate: 0.9, // Um pouco mais lento para clareza
+    pitch: 1.1, // Um pouco mais agudo para melhor compreensão
+  });
+}
+
+/**
  * Para a fala atual
  */
 export function stopSpeech(): void {

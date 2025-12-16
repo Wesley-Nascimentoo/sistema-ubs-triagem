@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { getDoctorQueue, updateAppointment } from '@/lib/storage';
 import { playBeep } from '@/lib/audio';
+import { callPatient } from '@/lib/speech';
 import { PRIORITY_LABELS, PRIORITY_COLORS, SERVICE_TYPES, type Appointment } from '@/../../shared/types';
 
 export default function DoctorPanel() {
@@ -39,7 +40,7 @@ export default function DoctorPanel() {
     setQueue(doctorQueue);
   };
 
-  const handleCallNext = () => {
+  const handleCallNext = async () => {
     if (queue.length === 0) {
       toast.error('Não há pacientes na fila de atendimento');
       return;
@@ -55,6 +56,9 @@ export default function DoctorPanel() {
     
     // Alerta sonoro para o atendimento médico
     playBeep(0.3, 660); // Um beep um pouco mais longo e agudo para diferenciar
+
+    // Chamar paciente com áudio 4 vezes
+    await callPatient(nextPatient.patientName, `Consultório ${nextPatient.consultationRoom}`);
 
     toast.success(`Chamando: ${nextPatient.patientName}`);
   };

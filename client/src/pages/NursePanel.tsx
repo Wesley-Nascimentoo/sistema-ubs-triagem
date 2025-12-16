@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTriageQueue, updateAppointment } from '@/lib/storage';
 import { playBeep } from '@/lib/audio';
+import { callPatient } from '@/lib/speech';
 import { PRIORITY_LABELS, PRIORITY_COLORS, SERVICE_TYPES, type Appointment } from '@/../../shared/types';
 
 export default function NursePanel() {
@@ -46,7 +47,7 @@ export default function NursePanel() {
     setQueue(triageQueue);
   };
 
-  const handleCallNext = () => {
+  const handleCallNext = async () => {
     if (queue.length === 0) {
       toast.error('Não há pacientes na fila de triagem');
       return;
@@ -62,6 +63,9 @@ export default function NursePanel() {
     
     // Alerta sonoro para a triagem
     playBeep();
+
+    // Chamar paciente com áudio 4 vezes
+    await callPatient(nextPatient.patientName, 'Sala de Triagem');
 
     toast.success(`Chamando: ${nextPatient.patientName}`);
   };
